@@ -116,7 +116,7 @@ class Trajet (models.Model):
     fromPlace = models.ForeignKey(Place,unique=False,on_delete=models.CASCADE,related_name=u'fromPlace_of_Trajet')
     toPlace = models.ForeignKey(Place,unique=False,on_delete=models.CASCADE,related_name=u'toPlace_of_Trajet')
 
-
+    
     def __str__(self):
         return unicode(self).encode('utf-8')
     
@@ -125,11 +125,19 @@ class Trajet (models.Model):
 
     
 class TrajetAdmin (admin.ModelAdmin) :
-    list_display = (u'name',  u'fromPlace', u'toPlace')
+    
+    def get_queryset(self, request):
+         return Trajet.objects.annotate(_trajetsdata_count=models.Count('trajetdata'))
+    
+    def trajetdatas_count(self, obj):
+        return obj._trajetsdata_count
+    
+    list_display = (u'name',  u'fromPlace', u'toPlace',u'trajetdatas_count')
     list_filter = (u'fromPlace',u'toPlace')
     
-    
-    
+    trajetdatas_count.admin_order_field = '_trajetsdata_count'
+    trajetdatas_count.short_description = 'Data count'
+
 '''
 ---------------------------------------------------------------------------------
 
